@@ -1,0 +1,45 @@
+import agenciaDeViajes.*
+
+describe "test sugeridos" {
+
+    const packNacional1 = new PacksNacionales(precioBase = 10, dias = 11, coordinadorACargo = guiaMotivado)
+    const guiaMotivado = new Guia(añosExperiencia = 25, estaMotivado = true, viajesRealizados = 21)
+    const acompañante1 = new Acompañante(añosExperiencia = 2, estaMotivado = true, viajesRealizados = 21)
+    const packInternacional1 = new PacksInternacionales(precioBase = 15, esLugarDeInteres = true, cantEscalas = 2, paisDestino = "Francia", dias = 7, coordinadorACargo = acompañante1)
+
+
+    method initialize() {
+
+  }
+    test "Un pack nacional sin beneficios vigentes devuelve el mismo precio base." {
+        assert.that(packNacional1.valorFinal() == 10)
+  }
+
+    test "Un pack nacional con 2 beneficios vigentes suma correctamente sus costos al precio base." {
+        const trasladoPrivado1 = new TrasladosPrivados(costo = 20)
+        const accesoSalaVip1 = new AccesoSalasVip(costo = 20)
+        packNacional1.agregarBeneficios([trasladoPrivado1, accesoSalaVip1])
+        assert.that(packNacional1.valorFinal() == 50)
+    }
+
+    test "Un pack internacional sin beneficios vigentes calcula correctamente el total con el 20% de recargo." {
+        assert.that(packInternacional1.valorFinal() == 18)
+    }
+
+    test "Un guía motivado con 21 viajes realizados es considerado altamente calificado." {
+        assert.that(guiaMotivado.esCalificado())
+    }
+
+    test "Un asistente logístico con menos de 3 años de experiencia no es calificado, aunque tenga muchos viajes." {
+        const asistenteLogistico1 = new AsistenteLogistico(añosExperiencia = 2, estaMotivado = true, viajesRealizados = 60)
+        assert.notThat(asistenteLogistico1.esCalificado())
+    }
+
+    test "Un acompañante con cualquier cantidad de viajes es siempre calificado si supera los 20." {
+        assert.that(acompañante1.esCalificado())
+    }
+
+    test "Un pack internacional de 7 dias no es premium no importa si todas las demás condiciones se dan" {
+        assert.notThat(packInternacional1.esPackPremium())
+    }
+}
